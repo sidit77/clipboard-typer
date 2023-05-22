@@ -11,7 +11,7 @@ cd clipboard-typer
 cargo run --release
 ```
 
-Or download the latest binary from the [GitHub action])(https://github.com/sidit77/clipboard-typer/actions)
+Or download the latest binary from the [GitHub action](https://github.com/sidit77/clipboard-typer/actions)
 
 ## License
 MIT License

@@ -10,20 +10,24 @@ use crate::error::{WinError, WinResult};
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum Event {
-    Hotkey
+    Hotkey(i32)
 }
 
 impl TryFrom<MSG> for Event {
     type Error = ();
 
     fn try_from(value: MSG) -> Result<Self, Self::Error> {
-        if value.message == WM_HOTKEY { Ok(Event::Hotkey) } else { Err(()) }
+        if value.message == WM_HOTKEY {
+            Ok(Event::Hotkey(value.wParam as _))
+        } else {
+            Err(())
+        }
     }
 }
 
 pub fn run_event_loop<F>(mut handler: F) -> WinResult<()>
 where
-    F: FnMut(Event)
+    F: FnMut(Event) -> WinResult<()>
 {
     let _console_hook = ConsoleQuitHook::current_thread()?;
     while let Some(msg) = next_msg()? {
@@ -32,7 +36,7 @@ where
             DispatchMessageW(&msg);
         }
         if let Ok(event) = Event::try_from(msg) {
-            handler(event);
+            handler(event)?;
         }
     }
     Ok(())

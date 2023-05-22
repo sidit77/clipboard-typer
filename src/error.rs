@@ -12,15 +12,16 @@ macro_rules! ensure {
 pub type WinResult<T> = Result<T, WinError>;
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
-pub struct WinError {
-    code: WIN32_ERROR
+pub enum WinError {
+    Win { code: WIN32_ERROR },
+    AlreadyRegistered
 }
 
 impl WinError {
     pub fn last_error() -> Self {
         unsafe {
             let code = GetLastError();
-            Self { code }
+            Self::Win { code }
         }
     }
 }

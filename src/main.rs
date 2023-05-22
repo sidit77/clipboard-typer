@@ -1,5 +1,5 @@
-mod error;
 mod clipboard;
+mod error;
 
 use crate::clipboard::Clipboard;
 use crate::error::WinResult;

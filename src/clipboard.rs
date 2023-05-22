@@ -1,11 +1,13 @@
-use std::slice;
 use std::char::REPLACEMENT_CHARACTER;
 use std::fmt::{Display, Formatter, Write};
+use std::slice;
+
 use windows_sys::core::PCWSTR;
 use windows_sys::Win32::Foundation::{FALSE, HANDLE};
 use windows_sys::Win32::System::DataExchange::{CloseClipboard, GetClipboardData, OpenClipboard};
 use windows_sys::Win32::System::Memory::{GlobalLock, GlobalUnlock};
 use windows_sys::Win32::System::Ole::CF_UNICODETEXT;
+
 use crate::ensure;
 use crate::error::{WinError, WinResult};
 
@@ -27,7 +29,6 @@ impl Clipboard {
             Ok(usr_str)
         }
     }
-
 }
 
 impl Drop for Clipboard {
@@ -48,10 +49,7 @@ impl SystemString {
         ensure!(handle != 0, WinError::last_error());
         let ptr = GlobalLock(handle) as PCWSTR;
         ensure!(!ptr.is_null(), WinError::last_error());
-        Ok(Self {
-            handle,
-            ptr,
-        })
+        Ok(Self { handle, ptr })
     }
     unsafe fn len(&self) -> usize {
         let mut ptr = self.ptr;
@@ -63,15 +61,15 @@ impl SystemString {
         length
     }
     fn as_slice(&self) -> &[u16] {
-        unsafe {
-            slice::from_raw_parts(self.ptr, self.len())
-        }
+        unsafe { slice::from_raw_parts(self.ptr, self.len()) }
     }
 }
 
 impl Drop for SystemString {
     fn drop(&mut self) {
-        unsafe{ GlobalUnlock(self.handle); }
+        unsafe {
+            GlobalUnlock(self.handle);
+        }
     }
 }
 

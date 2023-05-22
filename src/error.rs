@@ -20,9 +20,7 @@ impl WinError {
     pub fn last_error() -> Self {
         unsafe {
             let code = GetLastError();
-            Self {
-                code,
-            }
+            Self { code }
         }
     }
 }

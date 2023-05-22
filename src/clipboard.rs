@@ -1,6 +1,8 @@
 use std::char::REPLACEMENT_CHARACTER;
 use std::fmt::{Display, Formatter, Write};
+use std::iter::Copied;
 use std::slice;
+use std::slice::Iter;
 
 use windows_sys::core::PCWSTR;
 use windows_sys::Win32::Foundation::{FALSE, HANDLE};
@@ -88,5 +90,14 @@ impl Display for U16String {
             f.write_char(c)?;
         }
         Ok(())
+    }
+}
+
+impl<'a> IntoIterator for &'a U16String {
+    type Item = u16;
+    type IntoIter = Copied<Iter<'a, Self::Item>>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.iter().copied()
     }
 }
